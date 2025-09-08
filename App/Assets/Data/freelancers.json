@@ -1,0 +1,62 @@
+{
+  "Эмнэлгийн үйлчилгээ": [
+    {
+      "id": "hospital-1",
+      "name": "О.Наран-Ундраа",
+      "title": "Software • engineer",
+      "field": "Гоо сайхны эмнэлэг, эмэгтэйчүүдийн эмнэлэг, мэс заслын эмнэлэг",
+      "experience": "4 жил",
+      "location": "Seoul, Korea",
+      "image": "../Assets/Images/user.png"
+    },
+    {
+      "id": "hospital-2",
+      "name": "О.Наран-Ундраа",
+      "title": "Software • engineer",
+      "field": "Гоо сайхны эмнэлэг, эмэгтэйчүүдийн эмнэлэг, мэс заслын эмнэлэг",
+      "experience": "4 жил",
+      "location": "Daegu, Korea",
+      "image": "../Assets/Images/user.png"
+    }
+  ],
+  "Хууль зүйн үйлчилгээ": [
+    {
+      "id": "law-1",
+      "name": "О.Наран-Ундраа",
+      "title": "Software • engineer",
+      "field": "Хууль, виз, гэрээ, хөдөлмөрийн асуудал",
+      "experience": "4 жил",
+      "location": "Busan, Korea",
+      "image": "../Assets/Images/user.png"
+    },
+    {
+      "id": "law-2",
+      "name": "О.Наран-Ундраа",
+      "title": "Software • engineer",
+      "field": "Хууль, виз, гэрээ, хөдөлмөрийн асуудал",
+      "experience": "4 жил",
+      "location": "Ulsan, Korea",
+      "image": "../Assets/Images/user.png"
+    }
+  ],
+  "Хурал зөвлөгөөний албаны орчуулга": [
+    {
+      "id": "event-1",
+      "name": "О.Наран-Ундраа",
+      "title": "Software • engineer",
+      "field": "Хурал, уулзалт, PT танилцуулга орчуулга",
+      "experience": "4 жил",
+      "location": "Seoul, Korea",
+      "image": "../Assets/Images/user.png"
+    },
+    {
+      "id": "event-2",
+      "name": "О.Наран-Ундраа",
+      "title": "Software • engineer",
+      "field": "Хурал, уулзалт, PT танилцуулга орчуулга",
+      "experience": "4 жил",
+      "location": "Deajeon, Korea",
+      "image": "../Assets/Images/user.png"
+    }
+  ]
+}

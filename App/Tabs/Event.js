@@ -1,16 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { db } from '../configs/firebaseConfig';
 import { collection, getDocs } from 'firebase/firestore';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, Image, ScrollView, Linking, Modal, Button } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, Image, ScrollView, Linking, Modal, Button, StatusBar, Platform, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Calendar } from 'react-native-calendars';
 
 const today = new Date();
 
-export default function EventScreen() {
+export default function EventScreen({navigation}) {
   const [selectedDate, setSelectedDate] = useState(null);
   const [calendarVisible, setCalendarVisible] = useState(false);
   const [sections, setSections] = useState([]);
+  const [menuVisible, setMenuVisible] = useState(false);
 
   useEffect(() => {
     const fetchEventsFromFirestore = async () => {
@@ -41,14 +42,21 @@ export default function EventScreen() {
   }, []);
 
   return (
-    <ScrollView style={styles.container}>
-      {/* 상단 바 */}
+    <View style={styles.container}>
+      <StatusBar barStyle="dark-content" backgroundColor="#F9F9F9" />
       <View style={styles.topBar}> 
-        <Ionicons name="arrow-back" size={24} />
-        <Text style={styles.title}>Сонирхолтой соёлын эвент</Text>
-        <Ionicons name="ellipsis-vertical" size={20} />
+        {/*<TouchableOpacity onPress={() => navigation.goBack()}>
+                  <Ionicons name="arrow-back" size={24} color="#333" />
+        </TouchableOpacity>*/}
+        <Text style={styles.topTitle}>Сонирхолтой соёлын эвент</Text>
+        <Ionicons 
+          name="ellipsis-vertical" 
+          size={20} 
+          style={{ marginBottom: 12, marginRight: 10 }}
+          onPress={() => setMenuVisible(true)} 
+        />
       </View>
-
+    <ScrollView style={{paddingHorizontal: 16}}>
       {/* Today Card */}
       <View style={styles.todayCard}>
         <View style={styles.todayLeft}>
@@ -105,6 +113,42 @@ export default function EventScreen() {
         </View>
       ))}
     </ScrollView>
+      <Modal
+        visible={menuVisible}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={() => setMenuVisible(false)}
+      >
+        <TouchableOpacity 
+          style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.3)' }}
+          activeOpacity={1}
+          onPressOut={() => setMenuVisible(false)}
+        >
+          <View style={{
+            position: 'absolute',
+            top: 70,
+            right: 16,
+            backgroundColor: '#fff',
+            borderRadius: 8,
+            paddingVertical: 8,
+            paddingHorizontal: 16,
+            elevation: 5
+          }}>
+            <TouchableOpacity 
+              onPress={() => {
+                setMenuVisible(false);
+                Alert.alert(
+                  "Эвент нэмэх",
+                  "Эвент нэмэхийг хүсвэл энэ mail хаягаар холбогдоно уу: naranundraa5@gmail.com"
+                );
+              }}
+            >
+              <Text style={{ fontSize: 16, paddingVertical: 8 }}>Эвент нэмэх</Text>
+            </TouchableOpacity>
+          </View>
+        </TouchableOpacity>
+      </Modal>
+    </View>
   );
 }
 
@@ -114,14 +158,19 @@ function formatDate(dateString) {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#fff', padding: 20, marginTop: 48 },
+  container: {
+      flex: 1,
+      backgroundColor: '#F9F9F9',
+    
+    },
   topBar: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 10,
+    paddingTop: Platform.OS === 'ios' ? 55 : 44,
+    backgroundColor: '#fff',
   },
-  title: { fontSize: 20, fontWeight: 'bold' },
+  topTitle: { fontSize: 18, fontWeight: 'bold', paddingLeft: 20, marginBottom: 12 },
   todayCard: {
     flexDirection: 'row',
     backgroundColor: '#f9fafb',
@@ -145,13 +194,12 @@ const styles = StyleSheet.create({
     fontSize: 22,
     color: '#0085FF',
     marginBottom: 2,
-    fontWeight: 700
-
+    fontWeight: '700'
   },
   todayNumber: {
     fontSize: 48,
     marginBottom: 4,
-    fontWeight: 200,
+    fontWeight: '200',
   },
   todayDate: {
     fontSize: 12,

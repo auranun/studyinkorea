@@ -56,7 +56,7 @@ export default function BlogDetail({ route, navigation }) {
         {blog.image ? (
           <Image source={{ uri: blog.image }} style={styles.image} />
         ) : null}
-        <Text style={styles.benefit}>{blog.benefit}</Text>
+        {/*<Text style={styles.benefit}>{blog.benefit}</Text>*/}
         <Text style={styles.content}>{blog.info}</Text>
       </ScrollView>
     </View>
@@ -82,11 +82,12 @@ const styles = StyleSheet.create({
   },
   content: {
     fontSize: 16,
-    lineHeight: 28,
+    lineHeight: 20,
     color: '#333',
-    paddingHorizontal: 4,
+    paddingHorizontal: 2,
     paddingTop: 8,
-    marginLeft: 10
+    marginLeft: 8,
+    marginBottom: 20,
   },
   header: {
     flexDirection: 'row',

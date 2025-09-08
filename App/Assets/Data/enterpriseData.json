@@ -1,0 +1,42 @@
+[
+  {
+    "id": "1",
+    "name": "Өмгөөлөгч & хуулийн зөвлөгөө",
+    "phone": "010-5636-5933",
+    "address": "Сөүл хот, 234-7",
+    "discount": "5%",
+    "category": "law",
+    "location": "seoul",
+    "image": "../Assets/Images/law.jpg"
+  },
+  {
+    "id": "2",
+    "name": "Наран зоог",
+    "phone": "010-5636-5933",
+    "address": "Инчон, 123-4",
+    "discount": "10%",
+    "category": "restaurant",
+    "location": "incheon",
+    "image": "../Assets/Images/restaurant.jpg"
+  },
+  {
+    "id": "Temu zoog",
+    "name": "Temu зоог",
+    "phone": "010-5636-5933",
+    "address": ", 123-4",
+    "discount": "10%",
+    "category": "restaurant",
+    "location": "incheon",
+    "image": "../Assets/Images/restaurant.jpg"
+  },
+  {
+    "id": "3",
+    "name": "Хүүхэд харах үйлчилгээ",
+    "phone": "010-5636-5933",
+    "address": "Бусан, 56-1",
+    "discount": "5%",
+    "category": "childcare",
+    "location": "busan",
+    "image": "../Assets/Images/childcare.jpg"
+  }
+]

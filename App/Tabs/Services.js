@@ -1,203 +1,177 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image, ScrollView, FlatList, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Image, ScrollView, FlatList, TouchableOpacity, StatusBar, Platform, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import rawData from '../Assets/Data/freelancers.json';
 
-const DATA = {
-  "Эмнэлгийн үйлчилгээ": [
-    {
-      id: 'hospital-1',
-      name: 'Отгобаяр Наран-Ундраа',
-      title: 'Software • engineer',
-      field: 'Гоо сайхны эмнэлэг, эмэгтэйчүүдийн эмнэлэг, мэс заслын эмнэлэг',
-      experience: '4 жил',
-      hours: 'Mon - Sat / 9AM - 4PM',
-      image: require('../Assets/Images/user.png'),
-    },
-    {
-      id: 'hospital-2',
-      name: 'Отгобаяр Наран-Ундраа',
-      title: 'Software • engineer',
-      field: 'Гоо сайхны эмнэлэг, эмэгтэйчүүдийн эмнэлэг, мэс заслын эмнэлэг',
-      experience: '4 жил',
-      hours: 'Mon - Sat / 9AM - 4PM',
-      image: require('../Assets/Images/user.png'),
-    },
-  ],
-  "Хууль зүйн үйлчилгээ": [
-    {
-      id: 'law-1',
-      name: 'Отгобаяр Наран-Ундраа',
-      title: 'Software • engineer',
-      field: 'Хууль, виз, гэрээ, хөдөлмөрийн асуудал',
-      experience: '4 жил',
-      hours: 'Mon - Sat / 9AM - 4PM',
-      image: require('../Assets/Images/user.png'),
-    },
-    {
-      id: 'law-2',
-      name: 'Отгобаяр Наран-Ундраа',
-      title: 'Software • engineer',
-      field: 'Хууль, виз, гэрээ, хөдөлмөрийн асуудал',
-      experience: '4 жил',
-      hours: 'Mon - Sat / 9AM - 4PM',
-      image: require('../Assets/Images/user.png'),
-    },
-  ],
-  
-  "Хурал зөвлөгөөний албаны орчуулга": [
-    {
-      id: 'event-1',
-      name: 'Отгобаяр Наран-Ундраа',
-      title: 'Software • engineer',
-      field: 'Хурал, уулзалт, PT танилцуулга орчуулга',
-      experience: '4 жил',
-      hours: 'Mon - Sat / 9AM - 4PM',
-      image: require('../Assets/Images/user.png'),
-    },
-    {
-      id:'event-2',
-      name: 'Отгобаяр Наран-Ундраа',
-      title: 'Software • engineer',
-      field: 'Хурал, уулзалт, PT танилцуулга орчуулга',
-      experience: '4 жил',
-      hours: 'Mon - Sat / 9AM - 4PM',
-      image: require('../Assets/Images/user.png'),
-    },
-  ],
-};
+const DATA = JSON.parse(JSON.stringify(rawData));
 
 export default function Services({ navigation }) {
+  const [showMenu, setShowMenu] = React.useState(false);
+
   return (
-    <ScrollView style={styles.container}>
-      <View style={styles.header}>
-        {/* Go back button */}
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Ionicons name="arrow-back" size={24} />
-        </TouchableOpacity>
-        <Text style={styles.title}>Орчуулгын үйлчилгээ</Text>
-        <Ionicons name="ellipsis-vertical" size={20} />
+      <View style={styles.container}>  
+      <StatusBar barStyle="dark-content" backgroundColor="#F9F9F9" />
+          <View style={styles.topBar}>
+            {/*<TouchableOpacity onPress={() => navigation.goBack()}>
+              <Ionicons name="arrow-back" size={24} />
+            </TouchableOpacity>*/}
+            <Text style={styles.topTitle}>Мэргэжлийн үйлчилгээ</Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12, gap: 10 }}>
+              <TouchableOpacity onPress={() => console.log('Search pressed')}>
+                <Ionicons name="search-outline" size={22} />
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => setShowMenu(!showMenu)}>
+                <Ionicons name="ellipsis-vertical" size={20} style={{marginRight: 10}}  />
+              </TouchableOpacity>
+            </View>
+          </View>
+          {showMenu && (
+                  <TouchableWithoutFeedback onPress={() => setShowMenu(false)}>
+                    <View style={{
+                      position: 'absolute',
+                      top: 0,
+                      left: 0,
+                      right: 0,
+                      bottom: 0,
+                      zIndex: 100,
+                    }}>
+                      <View style={styles.showMenu}>
+                        <TouchableOpacity onPress={() => {
+                          setShowMenu(false);
+                          navigation.navigate('ProfileCreation');
+                        }}>
+                          <Text style={{ fontSize: 14 }}>Freelancer профайл үүсгэх</Text>
+                        </TouchableOpacity>
+                      </View>
+                    </View>
+                  </TouchableWithoutFeedback>
+                )}
+        <ScrollView style={{paddingHorizontal: 16}}>
+
+          <Text style={styles.subtitle}>
+            Олон салбарын мэргэжилтнүүдээс өөрийн хэрэгцээ шаардлагад нийцсэн үйлчилгээг сонгон авах болон өөрийн профайлыг үүсгэн өөрийн мэдлэг чадвараараа бусдад туслан нэмэлт орлого олох боломжтой.
+          </Text>
+
+          {Object.entries(DATA).map(([category, list]) => (
+            <View key={category}>
+              <Text style={styles.sectionTitle}>{category}</Text>
+              <FlatList
+                data={list}
+                horizontal
+                keyExtractor={(item, index) => `${item.id}-${index}`}
+                showsHorizontalScrollIndicator={false}
+                renderItem={({ item }) => (
+                  <View style={styles.card}>
+                    <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6, gap: 10}}>
+                      <Image source={require('../Assets/Images/user1.png')} style={styles.avatar} />
+                      <View style={styles.whiteBox}>
+                        <Text style={styles.name}>{item.name}</Text>
+                        <Text style={styles.titleText}>{item.title}</Text>
+                      </View>
+                    </View>
+
+                    <View style={styles.infoBox}>
+                        <Text style={styles.titleText}>Салбар: {item.field}</Text>
+                        <Text style={styles.titleText}>Туршлага: {item.experience}</Text>
+                      </View>
+                      
+
+                    <View style={styles.whiteBox}>
+                      <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'}}>
+                        <Ionicons name="location-outline" size={14} color="#555" style={{marginRight: 4}} />
+                        <Text style={styles.titleText}>{item.location}</Text>
+                        <TouchableOpacity style={styles.chatButton} onPress={() => navigation.navigate('Chat', { user: item })}>
+                              <Ionicons name="chatbubble-ellipses-outline" size={14} color="#fff" />
+                              <Text style={styles.badgeText}>Call</Text>
+                        </TouchableOpacity>
+                      </View>
+                    </View>
+                  </View>
+                )}
+              />
+            </View>
+          ))}
+        </ScrollView>
       </View>
-
-      <Text style={styles.subtitle}>
-        Бүх төрлийн орчуулгын үйлчилгээг нэг дороос өөрийн хэрэгцээ шаардлагад тохируулан сонгон авах боломжтой.
-      </Text>
-
-      {Object.entries(DATA).map(([category, list]) => (
-        <View key={category}>
-          <Text style={styles.sectionTitle}>{category}</Text>
-          <FlatList
-            data={list}
-            horizontal
-            keyExtractor={(item, index) => `${item.id}-${index}`}
-            showsHorizontalScrollIndicator={false}
-            renderItem={({ item }) => (
-              <View style={styles.card}>
-                <View style={{flexDirection: 'row', alignItems: 'center', marginBottom: 6}}>
-                  <Image source={item.image} style={styles.avatar} />
-                  <View style={styles.infoBox}>
-                    <Text style={styles.field}>Салбар: {item.field}</Text>
-                  </View>
-                </View>
-
-                <View style={styles.badge}>
-                  <Ionicons name="time-outline" size={14} color="#fff" style={{marginRight: 4}} />
-                  <Text style={styles.badgeText}>{item.experience}</Text>
-                </View>
-
-                <View style={styles.whiteBox}>
-                  <Text style={styles.name}>{item.name}</Text>
-                  <Text style={styles.titleText}>{item.title}</Text>
-                </View>
-
-                <View style={styles.whiteBox}>
-                  <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'center'}}>
-                    <Ionicons name="calendar-outline" size={14} color="#555" style={{marginRight: 4}} />
-                    <Text style={[styles.metaText, {color: '#555'}]}>{item.hours}</Text>
-                  </View>
-                </View>
-              </View>
-            )}
-          />
-        </View>
-      ))}
-    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#F9F9F9', padding: 20, marginTop: 48 },
-  header: {
+  container: {
+      flex: 1,
+      backgroundColor: '#F9F9F9',
+    },
+  topBar: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 12,
+    paddingTop: Platform.OS === 'ios' ? 55 : 44,
+    backgroundColor: '#fff',
+
   },
-  title: { fontSize: 18, fontWeight: 'bold' },
-  subtitle: { fontSize: 14, color: '#555' },
+  topTitle: { fontSize: 18, fontWeight: 'bold', paddingLeft: 20, marginBottom: 12 },
+  subtitle: { fontSize: 14, color: '#555', },
   sectionTitle: { fontSize: 16, fontWeight: 'bold', marginBottom: 16, marginTop: 16 },
   card: {
     width: 220,
-    backgroundColor: '#DDE7FF',
+    backgroundColor: '#fff',
     borderRadius: 20,
     padding: 12,
     paddingBottom: 16,
     marginRight: 12,
     elevation: 3,
     alignItems: 'center',
-    
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    shadowOffset: { width: 0, height: 2 },
   },
   avatar: {
     width: 60,
     height: 60,
     borderRadius: 28,
-    marginRight: 8,
   },
   infoBox: {
-    backgroundColor: '#2F73FF',
-    padding: 10,
+    backgroundColor: 'fff',
     borderRadius: 20,
-    marginBottom: 0,
-    maxWidth: 145,
+    maxWidth: '100%' ,
     textAlign: 'center',
     justifyContent: 'center',
-  },
-  field: {
-    color: '#fff',
-    fontSize: 10,
-  },
-  badge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#2F73FF',
-    borderRadius: 20,
-    paddingVertical: 2,
-    paddingHorizontal: 10,
-    marginBottom: 6,
   },
   badgeText: {
     color: '#fff',
     fontSize: 10,
+    flexDirection: 'row',
   },
   whiteBox: {
     backgroundColor: '#fff',
-    borderRadius: 12,
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    width: '100%',
     alignItems: 'center',
-    marginBottom: 4,
-    marginTop: 4
   },
   name: { fontWeight: '600', fontSize: 13,  },
   titleText: { fontSize: 11, color: '#444' },
-  metaRow: {
+  chatButton: {
+    backgroundColor: '#3A6AE4',
     flexDirection: 'row',
+    justifyContent: 'center',
     alignItems: 'center',
+    borderRadius: 12,
+    paddingVertical: 15,
+    paddingHorizontal: 22,
     gap: 6,
-    marginBottom: 4,
+    marginLeft: 8,
   },
-  metaText: {
-    fontSize: 12,
-    color: '#333',
+  showMenu: {
+    position: 'absolute',
+    top: 75,
+    right: 25,
+    backgroundColor: '#fff',
+    padding: 20,
+    borderRadius: 10,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 5,
+    elevation: 5,
+    zIndex: 100,
   },
 });

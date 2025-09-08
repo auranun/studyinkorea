@@ -1,27 +1,31 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity, TextInput, FlatList } from 'react-native';
+import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity, TextInput, FlatList, Platform, StatusBar } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { Dimensions } from 'react-native';
-import { getFirestore, collection, getDocs } from 'firebase/firestore';
+import { getFirestore, collection, getDocs, getDoc, doc } from 'firebase/firestore';
+import { getAuth } from 'firebase/auth';
 import { app } from '../configs/firebaseConfig'; // Make sure this file exists
+import { db } from '../configs/firebaseConfig';
 
 const screenWidth = Dimensions.get('window').width;
 
-export default function HomeScreen() {
+
+export default function HomeScreen(navigate) {
   const navigation = useNavigation();
   const [isSearching, setIsSearching] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [blogData, setBlogData] = useState({});
   const [activeTab, setActiveTab] = useState('Бүгд');
+  const [userName, setUserName] = useState('');
 
   const categoryMap = {
     'Бүгд': null,
-    'Хэлний бэлтгэл': ['Хэлээ сайжруулах', 'Суралцахад хэрэгтэй зөвлөмж'],
-    'Бакалавр': ['Суралцахад хэрэгтэй зөвлөмж'],
-    'Магистр': ['Суралцахад хэрэгтэй зөвлөмж'],
-    'Аяллын виз': ['Визний тухай', 'Солонгост ажиллах']
+    'Хэлний бэлтгэл': ['blog001', 'blog002', 'blog003', 'blog016', 'blog07', ],
+    'Бакалавр': ['blog006', 'blog008', 'blog011', 'blog015', 'blog017'],
+    'Магистр': ['blog017', 'blog015', 'blog014', 'blog018'],
+    'Аялал': ['blog009', 'blog010', 'blog011', 'blog012', 'blog017']
   };
 
   useEffect(() => {
@@ -39,6 +43,24 @@ export default function HomeScreen() {
       setBlogData(groupedData);
     };
     fetchBlogData();
+
+    const fetchUserName = async () => {
+      const auth = getAuth(app);
+      const user = auth.currentUser;
+      if (user) {
+        try {
+          const db = getFirestore(app);
+          const userDocRef = doc(db, 'Users', user.uid);
+          const userDoc = await getDoc(userDocRef);
+          if (userDoc.exists()) {
+            setUserName(userDoc.data().name || '');
+          }
+        } catch (error) {
+          console.error('Error fetching user name:', error);
+        }
+      }
+    };
+    fetchUserName();
   }, []);
 
   const allBlogs = Object.values(blogData).flat();
@@ -48,21 +70,32 @@ export default function HomeScreen() {
     (item.benefit && item.benefit.toLowerCase().includes(searchQuery.toLowerCase()))
   );
 
+  const filteredBlogs = activeTab === 'Бүгд'
+  ? allBlogs
+  : allBlogs.filter(blog => categoryMap[activeTab]?.includes(blog.id));
+
   return (
-    <View style={styles.container}>
-      {/*Header + Title */}
-      <LinearGradient
-        colors={['#005099', '#0085FF']}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 0, y: 1 }}
-        style={styles.headerWrapper}
-      >
+    <>
+      <StatusBar
+        translucent
+        backgroundColor="transparent"
+        barStyle="light-content"
+      />
+      <View style={styles.container}>
+        <LinearGradient
+          colors={['#005099', '#0085FF']}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 0, y: 1 }}
+          style={styles.headerWrapper}
+        >
         <View style={styles.headerRow}>
-          <View style={styles.header}>
+          <View style={{flexDirection: 'row', alignItems: 'center'}}>
+            <TouchableOpacity onPress={() => navigation.navigate('UserProfile')}>
             <Image source={require('../Assets/Images/user.png')} style={styles.avatar} />
+            </TouchableOpacity>
             <View>
-              <Text style={styles.greeting}>Сайн уу,</Text>
-              <Text style={styles.username}>Naran Undraa</Text>
+              <Text style={styles.greeting}>Сайн байна уу,</Text>
+              <Text style={styles.username}>{userName || 'Нэвтэрсэн хэрэглэгч'}</Text>
             </View>
           </View>
           <View style={styles.iconRow}>
@@ -83,7 +116,7 @@ export default function HomeScreen() {
             </TouchableOpacity>
           </View>
         </View>
-        <Text style={styles.title}>MOKO илүү хялбар болгоно</Text>
+        <Text style={styles.title}>MOKO үргэлж хамт</Text>
         {isSearching && (
           <View style={styles.searchBarWrapper}>
             <TextInput
@@ -122,7 +155,6 @@ export default function HomeScreen() {
         </View>
       ) : (
         <ScrollView>
-          {/* Tabs */}
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
@@ -152,27 +184,24 @@ export default function HomeScreen() {
               <Text style={activeTab === 'Магистр' ? styles.activeText : undefined}>Магистр</Text>
             </TouchableOpacity>
             <TouchableOpacity
-              style={[styles.tab, activeTab === 'Аяллын виз' && styles.tabActive]}
-              onPress={() => setActiveTab('Аяллын виз')}
+              style={[styles.tab, activeTab === 'Аялал' && styles.tabActive]}
+              onPress={() => setActiveTab('Аялал')}
             >
-              <Text style={activeTab === 'Аяллын виз' ? styles.activeText : undefined}>Аяллын виз</Text>
+              <Text style={activeTab === 'Аялал' ? styles.activeText : undefined}>Аялал</Text>
             </TouchableOpacity>
           </ScrollView>
 
-          {/* Card Sections */}
+          <ScrollView> 
+            {/* Card Sections */}
           <View style={styles.cardGroup}>
-            <Image style={styles.bigCard} source={require('../Assets/Images/advertise.jpg')} />
+            <Image style={styles.bigCard} source={require('/Users/naranundra/Projects/studyinkorea/public/Images/ads_cover.png')} />
           </View>
 
-          {Object.keys(blogData)
-            .filter(category => {
-              const selectedCategories = categoryMap[activeTab];
-              return !selectedCategories || selectedCategories.includes(category);
-            })
-            .map(category => (
+          {activeTab === 'Бүгд' ? (
+            Object.keys(blogData).map(category => (
               <View style={styles.cardGroup} key={category}>
                 <Text style={styles.sectionTitle}>{category}</Text>
-                <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                <ScrollView horizontal showsHorizontalScrollIndicator={false} nestedScrollEnabled>
                   {blogData[category].map(item => (
                     <TouchableOpacity
                       key={item.id}
@@ -186,10 +215,31 @@ export default function HomeScreen() {
                   ))}
                 </ScrollView>
               </View>
-          ))}
+            ))
+          ) : (
+            <View
+              data={filteredBlogs}
+              keyExtractor={item => item.id}
+              numColumns={2}
+              contentContainerStyle={{ paddingHorizontal: 10, paddingVertical: 10, columnGap: 10, rowGap: 10, marginRight: 10 }}
+              renderItem={({ item }) => (
+                <TouchableOpacity
+                  key={item.id}
+                  style={[styles.infoCard, { width: screenWidth * 0.45 }]}
+                  onPress={() => navigation.navigate('BlogDetail', { blogId: item.id })}
+                >
+                  <Image style={styles.infoImage} source={{ uri: item.image }} />
+                  <Text style={styles.cardTitle} numberOfLines={2}>{item.title || 'No Title'}</Text>
+                  <Text style={styles.cardText} numberOfLines={2}>{item.benefit}</Text>
+                </TouchableOpacity>
+              )}
+            />
+          )}
+          </ScrollView>
         </ScrollView>
       )}
-    </View>
+      </View>
+    </>
   );
 }
 
@@ -197,7 +247,6 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: '#F8F9FB',
     flex: 1,
-    marginTop: 48
   },
   searchBarWrapper: {
     marginTop: 12,
@@ -236,7 +285,9 @@ const styles = StyleSheet.create({
     marginRight: 12,
   },
   headerWrapper: {
-    padding: 16,
+    paddingHorizontal: 16,
+    paddingTop: Platform.OS === 'ios' ? 55 : 44,
+    paddingBottom: 12,
     borderBottomLeftRadius: 20,
     borderBottomRightRadius: 20,
   },
@@ -244,11 +295,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 12,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    paddingTop: 4,
+    paddingBottom: 8,
   },
   iconRow: {
     flexDirection: 'row',
@@ -263,7 +311,7 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   greeting: {
-    fontSize: 14,
+    fontSize: 15,
     color: '#fff',
   },
   username: {
@@ -279,32 +327,34 @@ const styles = StyleSheet.create({
   },
   tabs: {
     paddingHorizontal: 16,
-    paddingTop: 16,
+    paddingTop: 12,
+    paddingBottom: 10,
   },
   tab: {
-    backgroundColor: '#EEE',
-    paddingVertical: 8,
+    backgroundColor: '#E6EAF0',
+    paddingVertical: 10,
     paddingHorizontal: 14,
-    borderRadius: 20,
-    marginRight: 8,
+    borderRadius: 18,
+    marginRight: 10,
+    alignItems: 'center', 
   },
   tabActive: {
     backgroundColor: '#007AFF',
   },
   activeText: {
     color: '#fff',
-    fontWeight: 'bold',
+    fontWeight: '600',
   },
   cardGroup: {
     marginBottom: 10,
     marginTop: 5,
-    marginLeft: 10
+    marginLeft: 10,
   },
   bigCard: {
     width: '90%',
     height: 150,
     borderRadius: 10,
-    marginTop: 10,
+  
     alignSelf: "center"
   },
   sectionTitle: {
@@ -314,7 +364,7 @@ const styles = StyleSheet.create({
     marginLeft: 10
   },
   infoCard: {
-  width: screenWidth * 0.6, // өргөтгөж өгсөн
+  width: screenWidth * 0.6, 
   backgroundColor: '#fff',
   borderRadius: 10,
   padding: 10,
@@ -323,6 +373,7 @@ const styles = StyleSheet.create({
   shadowRadius: 4,
   elevation: 2,
   marginRight: 12,
+  marginLeft: 10,
   justifyContent: 'flex-start',
 },
 infoImage: {
